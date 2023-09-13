@@ -1,3 +1,8 @@
+This fork only updates the pins to match those in this spinner sold on AliExpress: https://s.click.aliexpress.com/e/_DBUmjYb
+However, it doesn't work in MiSTer FPGA in any of the four modes (or at least it doesn't work in my MiSTer FPGA). The Linux driver in MiSTer doesn't even recognize any events from the wheel, even though the buttons work just fine.
+In Windows, all modes work just fine, including buttons and the wheel.
+Any help will be appreciated.
+
 # Arduino_ArcadeSpinner
 
 This project is a modern re-creation of the spinners used in arcades, mainly for brick-breakers like arkanoid for example.
