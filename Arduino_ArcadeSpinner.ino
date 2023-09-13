@@ -39,13 +39,13 @@
 /////////////////////////////////////////////////////////////////
 
 // Pins used by encoder
-#define pinA 2
-#define pinB 3
+#define pinA 3
+#define pinB 2
 // Pins used by buttons
-#define Button0 5 // Left button
-#define Button1 4 // Right button
-#define Button2 15 // Small Left: Select/Coin
-#define Button3 14 // Small Right: Start
+#define Button0 4 // Left button
+#define Button1 5 // Right button
+#define Button2 10 // Small Left: Select/Coin
+#define Button3 15 // Small Right: Start
 
 ////////////////////////////////////////////////////////
 
