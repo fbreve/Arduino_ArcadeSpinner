@@ -1,20 +1,24 @@
-This fork only updates the pins to match those in this spinner sold on AliExpress: https://s.click.aliexpress.com/e/_DBUmjYb
-
-However, it doesn't work in MiSTer FPGA in any of the four modes (or at least it doesn't work in my MiSTer FPGA). The Linux driver in MiSTer doesn't even recognize any events from the wheel, even though the buttons work just fine.
-
-In Windows, all modes work just fine, including buttons and the wheel.
-
-Any help will be appreciated.
-
 # Arduino_ArcadeSpinner
 
-This project is a modern re-creation of the spinners used in arcades, mainly for brick-breakers like arkanoid for example.
+## About this fork
 
-The objective is to offer a feeling close to the original equipment by using components that are easy to obtain.
+This repository is a fork of [willoucom/Arduino_ArcadeSpinner](https://github.com/willoucom/Arduino_ArcadeSpinner), an Arduino Pro Micro USB arcade-spinner project. The **fork-specific firmware change** is the pin mapping in [`Arduino_ArcadeSpinner.ino`](Arduino_ArcadeSpinner.ino), adapted in September 2023 for a commercial spinner. The upstream software, credit notices, and 3D-model files are retained.
+
+- **Hardware reference:** [video of the commercial spinner used for this fork](https://www.youtube.com/watch?v=cjLsDffC8pk). This replaces a discontinued/unavailable sales link; it is a visual reference, **not** a firmware compatibility test.
+- **Historical Windows observation (2023):** the buttons and rotary encoder worked in all four modes with this adapted firmware.
+- **Known MiSTer FPGA limitation (2023):** the four buttons were recognized, but spinner rotation did not produce usable wheel events in any of the four modes on the maintainer's MiSTer. See the [upstream issue #4](https://github.com/willoucom/Arduino_ArcadeSpinner/issues/4). No fix or current-hardware retest is claimed.
+
+**Important:** the original project's MiSTer gameplay videos, supported-game list, enclosure photos, and assembly instructions below are **upstream examples**, not proof that this particular fork/hardware combination works on MiSTer.
+
+## Original project overview (from upstream)
+
+The original project recreates arcade spinners, particularly for games such as Arkanoid, using readily available components.
 
 ![Img!](img/pic.jpg "Arcade Spinner")
 
-## In action
+## In action (upstream demonstrations)
+
+These videos show the original project's controller. They do not demonstrate MiSTer support for the commercial spinner adapted in this fork.
 
 ### Arkanoid with rotary controller
 [![IMAGE ALT TEXT](http://img.youtube.com/vi/QnDsVMLP6zM/0.jpg)](http://www.youtube.com/watch?v=QnDsVMLP6zM "Arkanoid with rotary controller on MisterFPGA")
@@ -29,6 +33,8 @@ The objective is to offer a feeling close to the original equipment by using com
 
 ## Usage
 
+These are the firmware's available modes. Availability of a mode does not establish working spinner input on MiSTer for this fork.
+
 By default the device operate as a 4 button controller with Spinner/Paddle attached
 
 You can activate an additional behavior by holding a button when you plug in the device : 
@@ -38,9 +44,11 @@ You can activate an additional behavior by holding a button when you plug in the
 - Press Button2 (Small Left button) to switch device to mr.Spinner (enabling composite device on mister fpga)
  - In mr.Spinner mode, each button press is redirected to button 1
 
-## MisterFPGA
+## MiSTer FPGA — upstream compatibility examples
 
-### Working
+**Upstream-only list:** the games below were reported as working with the original project's hardware/firmware. They have **not** been validated with this fork's commercial spinner. For the fork's 2023 test outcome, see [About this fork](#about-this-fork).
+
+### Working (upstream)
 
 | Game                          | Note|
 |---                            |--- | 
@@ -63,7 +71,7 @@ You can activate an additional behavior by holding a button when you plug in the
 | Tron                          | |
 | Two Tigers (tron conversion)  | |
 
-### Working with workaround
+### Working with workaround (upstream)
 | Game                  | Note|
 |---                    |---| 
 | Block block (world)   | Use alternatives/block block (world 910910), must use Mouse Emulation |
@@ -73,7 +81,7 @@ You can activate an additional behavior by holding a button when you plug in the
 
 You can use the controller with mame and derivative by using the controller in Mouse Emulation mode.
 
-> Note: You can define the default behavior of the controller by modifying the source code, to do this modify the default value of the variable `bool mouse_emu = 0;` to 1t which will have the effect of operating the controller in mouse mode
+> Note: You can make mouse emulation the default by changing `bool mouse_emu = 0;` to `bool mouse_emu = 1;` in the source. This changes firmware behavior and is not a verified MiSTer workaround for this fork.
 
 You need to change the `dial device assignment` option in the mame settings either in mame.ini or using the GUI.
 
@@ -113,33 +121,30 @@ If you have some skills in 3D modeling, you can also use the .f3d archive which 
 3. Solder fresh wires on GND, VCC, A and B pads.
 4. Recycle the original metal case and wire for another project.
 
-### Arduino Pinout
+### Arduino pin mapping for this fork
 
-![Img!](img/arduino.jpg "Arduino")
+![Upstream Arduino Pro Micro wiring illustration; check the fork-specific table below](img/arduino.jpg "Upstream wiring reference")
 
-The buttons must be grounded, you can create a daisy chain to use a common GND for your 4 buttons, you can solder the buttons or use wire connectors.
+**Use the table below for the current fork firmware**, rather than the original project's pinout in the illustration. These are Arduino **digital pin numbers** from [`Arduino_ArcadeSpinner.ino`](Arduino_ArcadeSpinner.ino); verify the physical pin labels and wiring on your exact Pro Micro-compatible board before connecting anything.
 
-Bridge pad J1 to send +5v to encoder instead of 3.3v
+| Signal | Arduino digital pin in this fork | Firmware definition |
+| --- | --- | --- |
+| Encoder A | D3 | `pinA = 3` |
+| Encoder B | D2 | `pinB = 2` |
+| Large left button | D4 | `Button0 = 4` |
+| Large right button | D5 | `Button1 = 5` |
+| Small left / Select / Coin | D10 | `Button2 = 10` |
+| Small right / Start | D15 | `Button3 = 15` |
 
-```
-Encoder
-GND     GND
-VCC     VCC
-GP_3    A
-GP_2    B
+The buttons are configured with `INPUT_PULLUP` and are active when connected to **GND**. The encoder also needs appropriate GND and supply connections; confirm voltage and pinout against the actual board and encoder specifications.
 
-Buttons
-GP_5    Button0
-GP_4    Button1
-GP_15   Button2
-GP_14   Button3
-```
+The upstream assembly guide recommends bridging **J1** to supply 5 V to *its* encoder. **Do not automatically copy that modification** to a different commercial spinner or board: confirm the acceptable voltage and the purpose of J1 first. No physical-wiring validation was performed in this documentation update.
 
 ### Flash your Arduino
 
-1. Install Aduino IDE 2.x
+1. Install Arduino IDE 2.x
 2. Open Arduino_ArcadeSpinner.ino
-    1. (Optionnal) Change options in the configuration section.
+    1. (Optional) Change options in the configuration section.
 3. Connect your Arduino pro micro to your computer
 4. Select Arduino Leonardo with the correct com port
 5. Flash the controller
@@ -175,3 +180,10 @@ The rotary encoder uses a magnet to detect rotation, it translates the orientati
 
 ![Img!](img/magnet.jpg "Magnet view")
 ![Img!](img/magnet2.jpg "Magnet controller")
+
+
+## License and attribution
+
+This fork retains the original authors' notices and the [GNU GPL-3.0 license](LICENSE). The Arduino firmware originates from [Wilfried Jeanniard's project](https://github.com/willoucom/Arduino_ArcadeSpinner), which credits earlier work by Alexey Melnikov and Mikael Norrgård in its source headers. The included CAD/STL designs and images come from the upstream project; this fork does not claim authorship of those materials.
+
+The 2023 adaptation changed the firmware pin mapping. The November 2026 README maintenance changes **documentation only**: it does not modify the Arduino code, recompile the firmware, or establish new Windows/MiSTer compatibility results.
